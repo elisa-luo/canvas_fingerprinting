@@ -118,14 +118,15 @@ class FingerprintCollector extends BaseCollector {
          */
         const callStats = {};
         const startTime = Date.now();
-        try {
-            this._log('Scrolling page to bottom and up');
-            await this.scrollToBottomAndUp(page);
-        } catch (error) {
-            this._log('Error while scrolling page', error);
-        }
-        this._log('Waiting for 5 seconds');
-        await page.waitForTimeout(5000);
+        // try {
+        //     this._log('Scrolling page to bottom and up');
+        //     await this.scrollToBottomAndUp(page);
+        // } catch (error) {
+        //     this._log('Error while scrolling page', error);
+        // }
+        // this._log('Waiting for 5 seconds');
+        // await page.waitForTimeout(5000);
+        await page.waitForTimeout(500);
         const endTime = Date.now();
         this._stats
              .forEach((calls, source) => {
