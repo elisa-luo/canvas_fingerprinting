@@ -143,14 +143,39 @@
     interceptFunctionCall(CanvasRenderingContext2D, "addEventListener");
     // TODO: check after inspecting canvas images whether we need to filter
     // out "device class fingerprinting" attempts a la Picasso
+
+    // FPJS FUNCTION CALLS
+    interceptFunctionCall(HTMLCanvasElement, "toDataURL");
+    interceptFunctionCall(CanvasRenderingContext2D, "rect");
+    interceptFunctionCall(CanvasRenderingContext2D, "isPointInPath");
+    interceptFunctionCall(CanvasRenderingContext2D, "beginPath");
+    interceptFunctionCall(CanvasRenderingContext2D, "arc");
+    interceptFunctionCall(CanvasRenderingContext2D, "closePath");
+    interceptFunctionCall(CanvasRenderingContext2D, "fill");
+    interceptFunctionCall(CanvasRenderingContext2D, "fillRect");
+    interceptFunctionCall(CanvasRenderingContext2D, "fillText");
+
+    // FPJS PROPERTY ACCESSES
+    interceptPropAccess(HTMLCanvasElement, "width");
+    interceptPropAccess(HTMLCanvasElement, "height");
+    interceptPropAccess(CanvasRenderingContext2D, "textBaseline");
+    interceptPropAccess(CanvasRenderingContext2D, "fillStyle");
+    interceptPropAccess(CanvasRenderingContext2D, "font");
+    interceptPropAccess(CanvasRenderingContext2D, "globalCompositeOperation");
+
+    
+    // FONT PREFERENCE FINGERPRINTING
+    // interceptFunctionCall(HTMLElement, "getBoundingClientRect") // doesnt work 
+    // interceptPropAccess(CSSStyleDeclaration, "zoom");  // also does not work
+
   
-    // WEBRTC FINGERPRINTING
-    // The script calls createDataChannel or createOffer methods of the WebRTC peer connection.
-    interceptFunctionCall(RTCPeerConnection, "createDataChannel");
-    interceptFunctionCall(RTCPeerConnection, "createOffer");
-    // The script calls onicecandidate or localDescription methods of the WebRTC peer connection.
-    interceptPropAccess(RTCPeerConnection, "onicecandidate");
-    interceptPropAccess(RTCPeerConnection, "localDescription");
+    // // WEBRTC FINGERPRINTING
+    // // The script calls createDataChannel or createOffer methods of the WebRTC peer connection.
+    // interceptFunctionCall(RTCPeerConnection, "createDataChannel");
+    // interceptFunctionCall(RTCPeerConnection, "createOffer");
+    // // The script calls onicecandidate or localDescription methods of the WebRTC peer connection.
+    // interceptPropAccess(RTCPeerConnection, "onicecandidate");
+    // interceptPropAccess(RTCPeerConnection, "localDescription");
   
     // CANVAS FONT FINGERPRINTING
     // The script sets the font property on a canvas element to more than 20 different times.
@@ -159,11 +184,11 @@
     interceptFunctionCall(CanvasRenderingContext2D, "measureText");
     interceptFunctionCall(CanvasRenderingContext2D, "isPointInPath");
   
-    // AUDIOCONTEXT FINGERPRINTING
-    // The script calls any of the createOscillator, createDynamicsCompressor, destination, startRendering, oncomplete method of the audio context.
-    interceptFunctionCall(OfflineAudioContext, "createOscillator");
-    interceptFunctionCall(OfflineAudioContext, "createDynamicsCompressor");
-    interceptPropAccess(BaseAudioContext, "destination");
-    interceptFunctionCall(OfflineAudioContext, "startRendering");
-    interceptPropAccess(OfflineAudioContext, "oncomplete");
+    // // AUDIOCONTEXT FINGERPRINTING
+    // // The script calls any of the createOscillator, createDynamicsCompressor, destination, startRendering, oncomplete method of the audio context.
+    // interceptFunctionCall(OfflineAudioContext, "createOscillator");
+    // interceptFunctionCall(OfflineAudioContext, "createDynamicsCompressor");
+    // interceptPropAccess(BaseAudioContext, "destination");
+    // interceptFunctionCall(OfflineAudioContext, "startRendering");
+    // interceptPropAccess(OfflineAudioContext, "oncomplete");
   })();
