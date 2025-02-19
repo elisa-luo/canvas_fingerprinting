@@ -2,7 +2,6 @@
 Extended a version of the DDG Tracker Radar Collector
 
 ## Abstract
-Who Drew on My Canvas? Characterizing Canvas Fingerprinting Across the Web
 Canvas fingerprinting is a modern cross-site tracking technique that does not require user consent or draw user attention. This work presents an analysis of today’s usage of Canvas fingerprinting across the Web and evaluates its usage for cross-site tracking. We analyze the HTML Canvas API calls and extracted canvases and form clusters of identical canvas extractions found on different websites. This allows us to identify distinct entities performing Canvas fingerprinting and infer the usage of Canvas fingerprinting for cross-site user re-identification versus security purposes. Finally, we explore several techniques commercial fingerprinters use to evade anti-fingerprinting defenses.
 
 ## How do I use it?
