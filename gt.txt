@@ -1,0 +1,4 @@
+https://fingerprintjs.github.io/fingerprintjs/
+https://demo.fingerprint.com/playground
+https://www.snowcatcloud.com/fingerprint/
+https://abrahamjuliot.github.io/creepjs/
