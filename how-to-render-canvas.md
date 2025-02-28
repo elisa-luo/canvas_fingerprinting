@@ -5,6 +5,8 @@ Ingredients
 
 ## Step 1: open developer tools
 You can do this by right clicking on a new tab and click "inspect"
+Then u need to go to the console, where u can excecute javascript
+some browsers get mad at you for pasting code there as its a security risk, you can turn off that warning.
 
 ## Step 2: create a canvas in your browser
 Copy the following code
