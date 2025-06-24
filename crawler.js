@@ -181,9 +181,10 @@ async function getSiteData(context, url, {
 
     // Create a new page in a pristine context.
     const page = await context.newPage();
-
+    
     // optional function that should be run on every page (and subframe) in the browser context
     if (runInEveryFrame) {
+        
         await page.evaluateOnNewDocument(fpSrc);
         page.evaluateOnNewDocument(runInEveryFrame);
     }
@@ -246,7 +247,38 @@ async function getSiteData(context, url, {
     let timeout = false;
 
     try {
-        await page.goto(url.toString(), {timeout: maxLoadTimeMs, waitUntil: 'networkidle0'});
+        // await page.setJavaScriptEnabled(false);
+        // await page.goto(url.toString(), {timeout: maxLoadTimeMs, waitUntil: 'domcontentloaded'});
+        // await page.evaluate(() => {
+        //     
+        //     document.querySelectorAll('canvas').forEach(element => {
+                
+        //         window.initCanvasData({width: 200, height: 200,});
+        //     });
+        // });
+        // await page.setJavaScriptEnabled(true);
+        await page.goto(url.toString(), {timeout: maxLoadTimeMs, waitUntil: 'domcontentloaded'});
+        // await page.evaluate(() => {
+        //     window.initCanvasData({width: 100, height: 100,});
+        //     const target = document.querySelector('body');
+        //     const observer = new MutationObserver( mutations => {
+            
+        //         for (const mutation of mutations) {
+        //             if (mutation.type === 'attributes') {
+                        
+        //                 // for (const addedNode of mutation.addedNodes) {
+        //                     // if (addedNode.nodeName === 'CANVAS') {
+        //                         // window.initCanvasData({width: mutation.attributeName, height: 200});
+        //                         // for (const child of addedNode.childNodes) {
+        //                         // window.initCanvasData({width: child.nodeName, height: 200});
+        //                         // }
+        //                     // }
+        //                 // }
+        //             }
+        //         }
+        //     });
+        //     observer.observe(target, { childList: true, subtree: true, attributes: true });
+        // });
     } catch (e) {
         if (e instanceof puppeteer.errors.TimeoutError || (e.name && e.name === 'TimeoutError')) {
             log(chalk.yellow('Navigation timeout exceeded.'));

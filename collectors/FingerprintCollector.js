@@ -1,3 +1,4 @@
+const { log } = require('console');
 const BaseCollector = require('./BaseCollector');
 const {scrollPageToBottom, scrollPageToTop} = require('puppeteer-autoscroll-down');
 class FingerprintCollector extends BaseCollector {
@@ -17,11 +18,12 @@ class FingerprintCollector extends BaseCollector {
          */
         this._stats = new Map();
         /**
-         * @type {{ source: any; description: string; arguments: any; returnValue: any; accessType: string, frameURL: string}[]}
+         * @type {{ source: any; description: string; id: string, arguments: any; returnValue: any; accessType: string, frameURL: string}[]}
          */
         this._calls = [];
         this._callStats = {};
         this._log = log;
+        this._initData = [];
     }
 
     /**
@@ -29,6 +31,13 @@ class FingerprintCollector extends BaseCollector {
      */
 
     async addListener(page) {
+        
+        await page.exposeFunction('initCanvasData', canvas => {
+            if (canvas.width && canvas.height) {
+                this._initData.push({ id: canvas.id, width: canvas.width, height: canvas.height});
+            }  
+        });
+
         await page.exposeFunction('calledAPIEvent', apiCall => {
             if (!(apiCall && apiCall.source && apiCall.description)) {
                 // call details are missing
@@ -54,6 +63,7 @@ class FingerprintCollector extends BaseCollector {
             this._calls.push({
                 source: apiCall.source,
                 description: apiCall.description,
+                id: apiCall.id,
                 arguments: apiCall.args,
                 returnValue: apiCall.retVal,
                 accessType: apiCall.accessType,
@@ -140,6 +150,7 @@ class FingerprintCollector extends BaseCollector {
                      }, {});
              });
         return {
+            initCanvasData: this._initData,
             callStats,
             savedCalls: this._calls.filter(call => this.isAcceptableUrl(call.source, urlFilter)),
             startTime,

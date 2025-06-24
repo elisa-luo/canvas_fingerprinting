@@ -1,14 +1,16 @@
 (function() {
-
     const MAX_NUM_CALLS_TO_INTERCEPT = 100;
     const STACK_LINE_REGEXP = /(\()?(http[^)]+):[0-9]+:[0-9]+(\))?/;
     let accessCounts = {};  // keep the access and call counts for each property and function
+    const canvasIDs = new WeakMap();
+    var currID = Date.now() & 100000; //Math.floor(Math.random() * 100);
     const ENABLE_CONSOLE_LOGS = false;
     const console_log = function() {
       if (ENABLE_CONSOLE_LOGS){
         console.log.apply(console, arguments);
       }
     };
+    
     const getSourceFromStack = function() {
       const stack = new Error().stack.split("\n");
       stack.shift();  // remove our own intercepting functions from the stack
@@ -28,6 +30,17 @@
           const calledFunc = `${elementType.name}.${funcName}`;
           // check and enforce the limits
           // increment the call countl init if needed
+          var elemID = "";
+
+          if (retVal instanceof HTMLCanvasElement && funcName == "createElement") {
+            elemID = currID.toString();
+            currID += 1;
+            // elemID = Math.floor(Math.random() * 100).toString();
+            canvasIDs.set(retVal, elemID);
+            window.initCanvasData({id: elemID, height: retVal.height, width: retVal.width});
+          } else if (funcName == "createElement") {
+            return retVal;
+          }
           accessCounts[calledFunc] = (accessCounts[calledFunc] || 0) + 1;
           const callCnt = accessCounts[calledFunc];  // just a shorthand
           if (callCnt >= MAX_NUM_CALLS_TO_INTERCEPT) {
@@ -38,12 +51,19 @@
             });
             return retVal;
           }
+           
           // we still haven't reached the limit; we intercept the call
           console_log(`Intercepted call to ${calledFunc} ${callCnt} times`);
           const source = getSourceFromStack();
+          
+          if (this instanceof HTMLCanvasElement) {
+            elemID = canvasIDs.get(this).toString();
+          }
+
           const callDetails = {
             description: calledFunc,
             accessType: "call",
+            id: elemID,
             args: arguments,
             retVal,
             source,
@@ -85,9 +105,16 @@
           // we still haven't reached the limit; we intercept the access
           console_log(`Intercepted property access (get) ${accessedProp} (${accessCnt} times)`);
           const source = getSourceFromStack();
+          var elemID = "";
+          
+          if (this instanceof HTMLCanvasElement) {
+            elemID = canvasIDs.get(this).toString();
+          }
+
           const callDetails = {
             description: accessedProp,
             accessType: "get",
+            id: elemID,
             args: "",
             source,
             timeStamp: Date.now()
@@ -115,9 +142,16 @@
           // we still haven't reached the limit; we intercept the access
           console_log(`Intercepted property access (set) ${accessedProp} (${accessCnt} times)`);
           const source = getSourceFromStack();
+          var elemID = "";
+          
+          if (this instanceof HTMLCanvasElement) {
+            elemID = canvasIDs.get(this).toString();
+          }
+
           const callDetails = {
             description: accessedProp,
             accessType: "set",
+            id: elemID,
             args: value,
             source,
             timeStamp: Date.now()
@@ -145,6 +179,7 @@
     // out "device class fingerprinting" attempts a la Picasso
 
     // FPJS FUNCTION CALLS
+    interceptFunctionCall(Document, "createElement");
     interceptFunctionCall(HTMLCanvasElement, "toDataURL");
     interceptFunctionCall(CanvasRenderingContext2D, "rect");
     interceptFunctionCall(CanvasRenderingContext2D, "isPointInPath");
