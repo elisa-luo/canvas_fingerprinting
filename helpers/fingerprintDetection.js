@@ -3,7 +3,7 @@
     const STACK_LINE_REGEXP = /(\()?(http[^)]+):[0-9]+:[0-9]+(\))?/;
     let accessCounts = {};  // keep the access and call counts for each property and function
     const canvasIDs = new WeakMap();
-    var currID = Date.now() & 100000; //Math.floor(Math.random() * 100);
+    var currID = Date.now() % 100000; //Math.floor(Math.random() * 100);
     const ENABLE_CONSOLE_LOGS = false;
     const console_log = function() {
       if (ENABLE_CONSOLE_LOGS){
