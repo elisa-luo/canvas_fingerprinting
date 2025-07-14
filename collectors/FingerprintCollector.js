@@ -18,7 +18,7 @@ class FingerprintCollector extends BaseCollector {
          */
         this._stats = new Map();
         /**
-         * @type {{ source: any; description: string; id: string, arguments: any; returnValue: any; accessType: string, frameURL: string}[]}
+         * @type {{ source: any; description: string; canvasId: string, arguments: any; returnValue: any; accessType: string, frameURL: string}[]}
          */
         this._calls = [];
         this._callStats = {};
@@ -63,7 +63,7 @@ class FingerprintCollector extends BaseCollector {
             this._calls.push({
                 source: apiCall.source,
                 description: apiCall.description,
-                id: apiCall.id,
+                canvasId: apiCall.canvasID,
                 arguments: apiCall.args,
                 returnValue: apiCall.retVal,
                 accessType: apiCall.accessType,

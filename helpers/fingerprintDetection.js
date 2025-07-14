@@ -3,7 +3,7 @@
     const STACK_LINE_REGEXP = /(\()?(http[^)]+):[0-9]+:[0-9]+(\))?/;
     let accessCounts = {};  // keep the access and call counts for each property and function
     const canvasIDs = new WeakMap();
-    var currID = Date.now() % 100000; //Math.floor(Math.random() * 100);
+    var currCanvasID = Date.now() % 100000; 
     const ENABLE_CONSOLE_LOGS = false;
     const console_log = function() {
       if (ENABLE_CONSOLE_LOGS){
@@ -30,15 +30,16 @@
           const calledFunc = `${elementType.name}.${funcName}`;
           // check and enforce the limits
           // increment the call countl init if needed
-          var elemID = "";
-
+          var id = "";
+          
           if (retVal instanceof HTMLCanvasElement && funcName == "createElement") {
-            elemID = currID.toString();
-            currID += 1;
-            // elemID = Math.floor(Math.random() * 100).toString();
-            canvasIDs.set(retVal, elemID);
-            window.initCanvasData({id: elemID, height: retVal.height, width: retVal.width});
-          } else if (funcName == "createElement") {
+            id = currCanvasID.toString();
+            currCanvasID += 1;
+            canvasIDs.set(retVal, id);
+            window.initCanvasData({id: id, height: retVal.height, width: retVal.width});
+          } else if (retVal instanceof CanvasRenderingContext2D && funcName == "getContext") {
+            canvasIDs.set(retVal, canvasIDs.get(this).toString());
+          } else if (funcName == "createElement" || funcName == "getContext") {
             return retVal;
           }
           accessCounts[calledFunc] = (accessCounts[calledFunc] || 0) + 1;
@@ -55,15 +56,15 @@
           // we still haven't reached the limit; we intercept the call
           console_log(`Intercepted call to ${calledFunc} ${callCnt} times`);
           const source = getSourceFromStack();
-          
-          if (this instanceof HTMLCanvasElement) {
-            elemID = canvasIDs.get(this).toString();
+
+          if (this instanceof HTMLCanvasElement || this instanceof CanvasRenderingContext2D) {
+            id = canvasIDs.get(this).toString();
           }
 
           const callDetails = {
             description: calledFunc,
             accessType: "call",
-            id: elemID,
+            canvasID: id,
             args: arguments,
             retVal,
             source,
@@ -105,16 +106,16 @@
           // we still haven't reached the limit; we intercept the access
           console_log(`Intercepted property access (get) ${accessedProp} (${accessCnt} times)`);
           const source = getSourceFromStack();
-          var elemID = "";
+          var id = "";
           
-          if (this instanceof HTMLCanvasElement) {
-            elemID = canvasIDs.get(this).toString();
-          }
+          if (this instanceof HTMLCanvasElement || this instanceof CanvasRenderingContext2D) {
+            id = canvasIDs.get(this).toString();
+          } 
 
           const callDetails = {
             description: accessedProp,
             accessType: "get",
-            id: elemID,
+            canvasID: id,
             args: "",
             source,
             timeStamp: Date.now()
@@ -142,16 +143,16 @@
           // we still haven't reached the limit; we intercept the access
           console_log(`Intercepted property access (set) ${accessedProp} (${accessCnt} times)`);
           const source = getSourceFromStack();
-          var elemID = "";
+          var id = "";
           
-          if (this instanceof HTMLCanvasElement) {
-            elemID = canvasIDs.get(this).toString();
+          if (this instanceof HTMLCanvasElement || this instanceof CanvasRenderingContext2D) {
+            id = canvasIDs.get(this).toString();
           }
 
           const callDetails = {
             description: accessedProp,
             accessType: "set",
-            id: elemID,
+            canvasID: id,
             args: value,
             source,
             timeStamp: Date.now()
@@ -180,6 +181,7 @@
 
     // FPJS FUNCTION CALLS
     interceptFunctionCall(Document, "createElement");
+    interceptFunctionCall(HTMLCanvasElement, "getContext");
     interceptFunctionCall(HTMLCanvasElement, "toDataURL");
     interceptFunctionCall(CanvasRenderingContext2D, "rect");
     interceptFunctionCall(CanvasRenderingContext2D, "isPointInPath");
